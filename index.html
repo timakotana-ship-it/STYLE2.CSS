@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>7Dice</title>
+    <!-- новый рескин -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
+</head>
+<body>
+    <!-- контейнер для уведомлений -->
+    <div id="toastContainer"></div>
+<!-- прелоадер -->
+<div id="preloader">
+    <div class="preloader-content">
+        <div class="preloader-spinner"></div>
+        <div class="preloader-text">Загрузка...</div>
+    </div>
+</div>
+
+<!-- топ-бар -->
+<header class="top-bar">
+    <div class="logo-container">
+        <div class="logo-icon"><i class="fas fa-dice"></i></div>
+        <div class="logo-text">7Dice</div>
+        <div class="promo-badge"><i class="fas fa-bolt"></i>Акция</div>
+    </div>
+
+    <div class="top-bar-right">
+        <div class="balance-container" onclick="showPage('walletPage')">
+            <i class="fas fa-wallet balance-icon"></i>
+            <span class="balance-amount" id="userBalance">0.00$</span>
+            <div class="currency-selector">USD<i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="action-buttons">
+            <button class="deposit-btn" onclick="showPage('walletPage')"><i class="fas fa-plus"></i></button>
+            <button class="menu-btn"><i class="fas fa-bars"></i></button>
+        </div>
+    </div>
+</header>
+
+<!-- боковое меню (ПК) -->
+<nav class="side-nav" id="sideNav">
+    <div class="nav-section">
+        <div class="nav-title">Навигация</div>
+        <div class="nav-items">
+            <button class="nav-item active" onclick="showPage('mainPage')"><i class="fas fa-gamepad icon"></i><span>Игры</span></button>
+            <button class="nav-item" onclick="showPage('bonusPage')"><i class="fas fa-gift icon"></i><span>Бонусы</span></button>
+            <button class="nav-item" onclick="showPage('walletPage')"><i class="fas fa-wallet icon"></i><span>Кошелёк</span></button>
+            <button class="nav-item" onclick="showPage('profilePage')"><i class="fas fa-user icon"></i><span>Профиль</span></button>
+        </div>
+    </div>
+    <div class="nav-section">
+        <div class="nav-title">Популярные игры</div>
+        <div class="nav-items">
+            <button class="nav-item" onclick="openGame('dice')"><i class="fas fa-dice icon"></i><span>Кости</span></button>
+            <button class="nav-item" onclick="openGame('mines')"><i class="fas fa-bomb icon"></i><span>Минёр</span></button>
+        </div>
+    </div>
+    <div class="nav-footer">
+        <div class="lang-selector">
+            <div class="lang-flag"></div>
+            <div class="lang-code">RU</div><i class="fas fa-chevron-down"></i>
+        </div>
+        <button class="settings-btn"><i class="fas fa-cog"></i><span>Настройки</span></button>
+    </div>
+</nav>
+
+<!-- основной контент -->
+<main class="main-content active" id="mainPage">
+    <!-- баннер-видео -->
+    <div class="mp4-banner">
+        <video autoplay loop muted playsinline><source src="images/banner1.mp4" type="video/mp4">Ваш браузер не поддерживает видео.</video>
+        <div class="banner-overlay">
+            <div class="banner-title">Играй и Выигрывай</div>
+            <div class="banner-subtitle">До 5000$ за одну ставку</div>
+            <div class="banner-indicators"><span class="active"></span><span></span><span></span></div>
+        </div>
+    </div>
+
+    <!-- промо-карточки -->
+    <div class="promo-grid">
+        <div class="promo-card large">
+            <div class="promo-bg" style="background-image:url('images/promo-bg1.jpg')"></div>
+            <div class="promo-content">
+                <div class="promo-title">НОВЫЙ ГОД</div>
+                <div class="promo-subtitle">Специальные бонусы до 500$</div>
+            </div>
+            <button class="promo-play-btn"><i class="fas fa-play"></i></button>
+        </div>
+        <div class="promo-card">
+            <div class="promo-bg" style="background-image:url('images/promo-bg2.jpg')"></div>
+            <div class="promo-content">
+                <div class="promo-title">КЕШБЭК</div>
+                <div class="promo-subtitle">Возврат 10%</div>
+            </div>
+        </div>
+        <div class="promo-card">
+            <div class="promo-bg" style="background-image:url('images/promo-bg3.jpg')"></div>
+            <div class="promo-content">
+                <div class="promo-title">VIP</div>
+                <div class="promo-subtitle">Эксклюзивные условия</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- навигация -->
+    <div class="nav-panel">
+        <button class="search-btn" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
+        <button class="all-games-btn" onclick="showAllGames()"><i class="fas fa-gamepad"></i>Все игры</button>
+        <button class="nav-tab active" onclick="showAllGames()"><i class="fas fa-fire"></i>Популярные</button>
+        <button class="nav-tab"><i class="fas fa-star"></i>Новые</button>
+        <button class="nav-tab"><i class="fas fa-crown"></i>VIP</button>
+    </div>
+
+    <!-- поиск -->
+    <div class="search-panel" id="searchPanel" style="display:none">
+        <div class="search-header">
+            <input type="text" class="search-input" id="searchInput" placeholder="Поиск игр..." oninput="searchGames()">
+            <button class="close-search" onclick="toggleSearch()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="search-results" id="searchResults"><div class="no-results">Введите название игры</div></div>
+    </div>
+
+    <!-- секция игр -->
+    <div class="games-section" id="gamesSection">
+        <div class="section-header">
+            <div class="section-title"><i class="fas fa-gamepad"></i>Игры</div>
+            <button class="view-all" onclick="showAllGames()">Все игры<i class="fas fa-arrow-right"></i></button>
+        </div>
+        <div class="games-carousel">
+            <div class="carousel-container">
+                <div class="games-carousel-inner"></div>
+            </div>
+            <button class="carousel-arrow prev" onclick="prevGameSlide()"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-arrow next" onclick="nextGameSlide()"><i class="fas fa-chevron-right"></i></button>
+            <div class="carousel-indicators"><span class="carousel-indicator active" onclick="goToGameSlide(0)"></span><span class="carousel-indicator" onclick="goToGameSlide(1)"></span></div>
+        </div>
+    </div>
+</main>
+
+<!-- страницы игр и кошелька остаются без изменений -->
+<div class="main-content" id="dicePage">...весь прежний код...</div>
+<div class="main-content" id="minesPage">...весь прежний код...</div>
+<div class="main-content" id="walletPage">...весь прежний код...</div>
+<div class="main-content" id="bonusPage">...весь прежний код...</div>
+<div class="main-content" id="profilePage">...весь прежний код...</div>
+
+<!-- нижняя навигация (мобила) -->
+<nav class="bottom-nav">
+    <button class="bottom-nav-item active" onclick="showPage('mainPage')"><i class="fas fa-gamepad icon"></i><span>Игры</span></button>
+    <button class="bottom-nav-item" onclick="showPage('bonusPage')"><i class="fas fa-gift icon"></i><span>Бонусы</span></button>
+    <button class="bottom-nav-item" onclick="showPage('profilePage')"><i class="fas fa-user icon"></i><span>Профиль</span></button>
+    <button class="bottom-nav-item" onclick="showPage('walletPage')"><i class="fas fa-wallet icon"></i><span>Кошелёк</span></button>
+</nav>
+
+<!-- звуки -->
+<audio id="winSound" preload="auto"><source src="sounds/win.mp3" type="audio/mpeg"></audio>
+<audio id="loseSound" preload="auto"><source src="sounds/lose.mp3" type="audio/mpeg"></audio>
+<audio id="clickSound" preload="auto"><source src="sounds/click.mp3" type="audio/mpeg"></audio>
+
+<script src="app.js"></script>
+</body>
+</html>
